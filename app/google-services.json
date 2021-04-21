@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "908016762861",
+    "project_id": "roleme-ef88d",
+    "storage_bucket": "roleme-ef88d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:908016762861:android:45c44ac2de3064e2f5b1e4",
+        "android_client_info": {
+          "package_name": "com.example.roleme"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "908016762861-uijeoqblfck5ocup6jmktbci30uqrf1q.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBdfvG7Flx9O3Hi9g_UQ-F6siBnvDNowMM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "908016762861-uijeoqblfck5ocup6jmktbci30uqrf1q.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
