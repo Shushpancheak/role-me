@@ -39,7 +39,6 @@ class LoginRepository(val dataSource: LoginDataSource) {
     }
 
     fun register(email:String, username: String, password: String): Result<LoggedInUser> {
-        // handle login
         val result = dataSource.register(email, username, password)
 
         if (result is Result.Success) {

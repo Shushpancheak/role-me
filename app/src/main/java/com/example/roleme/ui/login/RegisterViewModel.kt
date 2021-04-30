@@ -8,6 +8,7 @@ import com.example.roleme.data.LoginRepository
 import com.example.roleme.data.Result
 
 import com.example.roleme.R
+import com.google.android.gms.tasks.Tasks
 
 class RegisterViewModel(private val loginRepository: LoginRepository) : ViewModel() {
 

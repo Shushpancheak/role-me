@@ -6,7 +6,7 @@
     <string name="prompt_password">Password</string>
     <string name="action_sign_in">Register</string>
     <string name="action_sign_in_short">Sign in</string>
-    <string name="welcome">"Welcome !"</string>
+    <string name="welcome">"Welcome!"</string>
     <string name="invalid_username">Not a valid username</string>
     <string name="invalid_password">Password must be >5 characters</string>
     <string name="login_failed">"Login failed"</string>
@@ -16,4 +16,7 @@
     <string name="invalid_email">Invalid email</string>
     <string name="error_user_id">ERROR</string>
     <string name="error_registering">Error registering</string>
+    <string name="sign_out">Sign out</string>
+    <string name="new_message">New message</string>
+    <string name="select_user">Select user</string>
 </resources>

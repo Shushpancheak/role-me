@@ -9,11 +9,17 @@ import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.*
+import com.example.roleme.LatestMessagesActivity
 
 import com.example.roleme.R
+import com.example.roleme.data.model.LoggedInUser
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
+import java.io.IOException
 
 class RegisterActivity : AppCompatActivity() {
 
@@ -26,7 +32,7 @@ class RegisterActivity : AppCompatActivity() {
         val username = findViewById<EditText>(R.id.name_reg)
         val email = findViewById<EditText>(R.id.email_reg)
         val password = findViewById<EditText>(R.id.password_reg)
-        val login = findViewById<Button>(R.id.register)
+        val register = findViewById<Button>(R.id.register)
         val loading = findViewById<ProgressBar>(R.id.loading)
 
         val alreadyAcc = findViewById<TextView>(R.id.already_have_account)
@@ -43,7 +49,7 @@ class RegisterActivity : AppCompatActivity() {
             val loginState = it ?: return@Observer
 
             // disable login button unless both username / password is valid
-            login.isEnabled = loginState.isDataValid
+            register.isEnabled = loginState.isDataValid
 
             if (loginState.usernameError != null) {
                 username.error = getString(loginState.usernameError)
@@ -53,28 +59,43 @@ class RegisterActivity : AppCompatActivity() {
             }
         })
 
-        registerViewModel.registerResult.observe(this@RegisterActivity, Observer {
-            val loginResult = it ?: return@Observer
-
-            loading.visibility = View.GONE
-            if (loginResult.error != null) {
-                showLoginFailed(loginResult.error)
-            }
-            if (loginResult.success != null) {
-                updateUiWithUser(loginResult.success)
-            }
-            setResult(Activity.RESULT_OK)
-
-            //Complete and destroy login activity once successful
-            finish()
-        })
-
         username.afterTextChanged {
             registerViewModel.registerDataChanged(
                 email.text.toString(),
                 username.text.toString(),
                 password.text.toString()
             )
+        }
+
+        register.setOnClickListener {
+            loading.visibility = View.VISIBLE
+
+            val error_uid = "ERROR"
+            var uid = error_uid
+            var user: LoggedInUser
+            try {
+                FirebaseAuth.getInstance().createUserWithEmailAndPassword(email.text.toString(), password.text.toString())
+                        .addOnCompleteListener {
+                            if (!it.isSuccessful) throw IOException("Error registering")
+                            uid = FirebaseAuth.getInstance().uid.toString()
+                            val ref = FirebaseDatabase.getInstance().getReference("/users/$uid")
+                            user = LoggedInUser(uid, username.text.toString())
+                            ref.setValue(user)
+                        }
+                        .addOnCompleteListener {
+                            loading.visibility = View.GONE
+
+                            updateUiWithUser(LoggedInUserView(username.text.toString()))
+                            setResult(Activity.RESULT_OK)
+                            val intent = Intent(this, LatestMessagesActivity::class.java)
+                            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            startActivity(intent)
+                        }
+            }
+            catch(e: Throwable) {
+                loading.visibility = View.GONE
+                showLoginFailed(R.string.error_registering)
+            }
         }
 
         password.apply {
@@ -97,16 +118,11 @@ class RegisterActivity : AppCompatActivity() {
                 }
                 false
             }
-
-            login.setOnClickListener {
-                loading.visibility = View.VISIBLE
-                registerViewModel.register(email.text.toString(), username.text.toString(), password.text.toString())
-            }
         }
     }
 
     private fun updateUiWithUser(model: LoggedInUserView) {
-        val welcome: String = R.string.welcome.toString()
+        val welcome: String = getString(R.string.welcome)
         val displayName = model.displayName
         // TODO : initiate successful logged in experience
         Toast.makeText(
@@ -129,9 +145,7 @@ fun EditText.afterTextChanged(afterTextChanged: (String) -> Unit) {
         override fun afterTextChanged(editable: Editable?) {
             afterTextChanged.invoke(editable.toString())
         }
-
         override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
-
         override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
     })
 }
