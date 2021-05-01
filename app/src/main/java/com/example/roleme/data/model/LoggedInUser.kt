@@ -6,4 +6,6 @@ package com.example.roleme.data.model
 data class LoggedInUser(
     val userId: String,
     val displayName: String
-)
+) {
+    constructor(): this("", "")
+}

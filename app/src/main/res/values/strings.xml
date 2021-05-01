@@ -19,4 +19,5 @@
     <string name="sign_out">Sign out</string>
     <string name="new_message">New message</string>
     <string name="select_user">Select user</string>
+    <string name="database_url">https://roleme-ef88d-default-rtdb.europe-west1.firebasedatabase.app/</string>
 </resources>

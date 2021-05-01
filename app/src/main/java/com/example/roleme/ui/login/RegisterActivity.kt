@@ -73,12 +73,13 @@ class RegisterActivity : AppCompatActivity() {
             val error_uid = "ERROR"
             var uid = error_uid
             var user: LoggedInUser
+            val database_str = getString(R.string.database_url)
             try {
                 FirebaseAuth.getInstance().createUserWithEmailAndPassword(email.text.toString(), password.text.toString())
                         .addOnCompleteListener {
                             if (!it.isSuccessful) throw IOException("Error registering")
                             uid = FirebaseAuth.getInstance().uid.toString()
-                            val ref = FirebaseDatabase.getInstance().getReference("/users/$uid")
+                            val ref = FirebaseDatabase.getInstance(database_str).getReference("/users/$uid")
                             user = LoggedInUser(uid, username.text.toString())
                             ref.setValue(user)
                         }
