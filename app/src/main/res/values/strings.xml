@@ -15,9 +15,11 @@
     <string name="login">Login</string>
     <string name="invalid_email">Invalid email</string>
     <string name="error_user_id">ERROR</string>
-    <string name="error_registering">Error registering</string>
+    <string name="error_registering">Error:</string>
     <string name="sign_out">Sign out</string>
     <string name="new_message">New message</string>
     <string name="select_user">Select user</string>
     <string name="database_url">https://roleme-ef88d-default-rtdb.europe-west1.firebasedatabase.app/</string>
+    <string name="error_new_msg">Error:</string>
+    <string name="error_new_msg_auth">Error: not logged in</string>
 </resources>

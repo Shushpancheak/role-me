@@ -17,6 +17,7 @@ import com.example.roleme.LatestMessagesActivity
 
 import com.example.roleme.R
 import com.example.roleme.data.model.LoggedInUser
+import com.google.android.gms.tasks.Tasks
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import java.io.IOException
@@ -74,29 +75,34 @@ class RegisterActivity : AppCompatActivity() {
             var uid = error_uid
             var user: LoggedInUser
             val database_str = getString(R.string.database_url)
-            try {
-                FirebaseAuth.getInstance().createUserWithEmailAndPassword(email.text.toString(), password.text.toString())
-                        .addOnCompleteListener {
-                            if (!it.isSuccessful) throw IOException("Error registering")
-                            uid = FirebaseAuth.getInstance().uid.toString()
-                            val ref = FirebaseDatabase.getInstance(database_str).getReference("/users/$uid")
-                            user = LoggedInUser(uid, username.text.toString())
-                            ref.setValue(user)
-                        }
-                        .addOnCompleteListener {
-                            loading.visibility = View.GONE
-
-                            updateUiWithUser(LoggedInUserView(username.text.toString()))
-                            setResult(Activity.RESULT_OK)
-                            val intent = Intent(this, LatestMessagesActivity::class.java)
-                            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
-                            startActivity(intent)
-                        }
-            }
-            catch(e: Throwable) {
-                loading.visibility = View.GONE
-                showLoginFailed(R.string.error_registering)
-            }
+            FirebaseAuth.getInstance().createUserWithEmailAndPassword(email.text.toString(), password.text.toString())
+                .addOnCompleteListener {
+                    try {
+                    if (!it.isSuccessful) throw IOException(it.exception)
+                    uid = FirebaseAuth.getInstance().uid.toString()
+                    val ref = FirebaseDatabase.getInstance(database_str).getReference("/users/$uid")
+                    user = LoggedInUser(uid, username.text.toString())
+                    ref.setValue(user)
+                    }
+                    catch(e: Throwable) {
+                        loading.visibility = View.GONE
+                        showLoginFailed(R.string.error_registering, e)
+                    }
+                }
+                .addOnSuccessListener {
+                    try {
+                    loading.visibility = View.GONE
+                    updateUiWithUser(LoggedInUserView(username.text.toString()))
+                    setResult(Activity.RESULT_OK)
+                    val intent = Intent(this, LatestMessagesActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK.or(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    startActivity(intent)
+                    }
+                    catch(e: Throwable) {
+                        loading.visibility = View.GONE
+                        showLoginFailed(R.string.error_registering, e)
+                    }
+                }
         }
 
         password.apply {
@@ -133,8 +139,8 @@ class RegisterActivity : AppCompatActivity() {
         ).show()
     }
 
-    private fun showLoginFailed(@StringRes errorString: Int) {
-        Toast.makeText(applicationContext, errorString, Toast.LENGTH_SHORT).show()
+    private fun showLoginFailed(@StringRes errorString: Int, error: Throwable) {
+        Toast.makeText(applicationContext, getString(errorString) + " " + error.toString(), Toast.LENGTH_SHORT).show()
     }
 }
 
